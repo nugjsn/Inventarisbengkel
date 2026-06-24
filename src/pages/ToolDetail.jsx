@@ -12,7 +12,7 @@ const ToolDetail = () => {
     const query = new URLSearchParams(location.search);
     const isScanView = query.get('view') === 'scan';
 
-    const { getToolById, deleteTool, borrowTool, returnTool, getBorrowHistory } = useInventory();
+    const { getToolById, deleteTool, borrowTool, returnTool, getBorrowHistory, loading } = useInventory();
     const tool = getToolById(id);
     const [showQR, setShowQR] = useState(false);
     const [history, setHistory] = useState([]);
@@ -43,7 +43,27 @@ const ToolDetail = () => {
     // Security: Only owner or admin can edit/delete
     const canManage = isAdmin || (tool?.jurusan === userJurusan);
 
-    if (!tool) return null;
+    if (loading) {
+        return (
+            <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '80vh', flexDirection: 'column' }}>
+                <div style={{ width: '40px', height: '40px', border: '4px solid rgba(255,255,255,0.1)', borderTopColor: 'var(--accent-primary)', borderRadius: '50%', animation: 'spin 1s linear infinite' }}></div>
+                <p style={{ marginTop: '20px', color: 'var(--text-muted)' }}>Memuat data alat...</p>
+                <style>{`@keyframes spin { to { transform: rotate(360deg); } }`}</style>
+            </div>
+        );
+    }
+
+    if (!tool) {
+        return (
+            <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '80vh', flexDirection: 'column', textAlign: 'center' }}>
+                <h2 style={{ color: 'var(--text-primary)' }}>Alat tidak ditemukan</h2>
+                <p style={{ color: 'var(--text-muted)', marginBottom: '20px' }}>Alat mungkin telah dihapus atau ID tidak valid.</p>
+                <button onClick={() => navigate('/')} className="btn btn-outline">
+                    <ArrowLeft size={16} /> Kembali ke Dashboard
+                </button>
+            </div>
+        );
+    }
 
     const qrUrl = window.location.origin + `/tool/${id}?view=scan`;
 
