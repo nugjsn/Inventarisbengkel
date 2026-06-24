@@ -87,16 +87,65 @@ const EditTool = () => {
     const handleImageChange = (e) => {
         const file = e.target.files[0];
         if (file) {
-            if (file.size > 200 * 1024) {
-                setImageError('Image size must be less than 200KB');
+            if (file.size > 10 * 1024 * 1024) {
+                setImageError('Ukuran file maksimal 10MB sebelum dikompres');
                 return;
             }
-            setImageError('');
+            if (!file.type.startsWith('image/')) {
+                setImageError('File harus berupa gambar');
+                return;
+            }
+
             const reader = new FileReader();
-            reader.onloadend = () => {
-                setFormData(prev => ({ ...prev, image: reader.result }));
-            };
             reader.readAsDataURL(file);
+            reader.onload = (event) => {
+                const img = new Image();
+                img.src = event.target.result;
+                img.onload = () => {
+                    const canvas = document.createElement('canvas');
+                    const MAX_WIDTH = 800;
+                    const MAX_HEIGHT = 800;
+                    let width = img.width;
+                    let height = img.height;
+
+                    if (width > height) {
+                        if (width > MAX_WIDTH) {
+                            height *= MAX_WIDTH / width;
+                            width = MAX_WIDTH;
+                        }
+                    } else {
+                        if (height > MAX_HEIGHT) {
+                            width *= MAX_HEIGHT / height;
+                            height = MAX_HEIGHT;
+                        }
+                    }
+
+                    canvas.width = width;
+                    canvas.height = height;
+                    const ctx = canvas.getContext('2d');
+                    ctx.drawImage(img, 0, 0, width, height);
+
+                    let quality = 0.7;
+                    let dataUrl = canvas.toDataURL('image/jpeg', quality);
+                    
+                    let base64Length = dataUrl.length - (dataUrl.indexOf(',') + 1);
+                    let sizeInBytes = (base64Length * 3) / 4;
+                    
+                    while (sizeInBytes > 100 * 1024 && quality > 0.1) {
+                        quality -= 0.1;
+                        dataUrl = canvas.toDataURL('image/jpeg', quality);
+                        base64Length = dataUrl.length - (dataUrl.indexOf(',') + 1);
+                        sizeInBytes = (base64Length * 3) / 4;
+                    }
+
+                    if (sizeInBytes > 100 * 1024) {
+                        setImageError('Gambar masih terlalu besar (>100KB) setelah dikompres otomatis.');
+                    } else {
+                        setImageError('');
+                        setFormData(prev => ({ ...prev, image: dataUrl }));
+                    }
+                };
+            };
         }
     };
 
@@ -134,7 +183,7 @@ const EditTool = () => {
 
                 <form onSubmit={handleSubmit}>
                     <div className="form-group">
-                        <label>Tool Photo (Max 200KB)</label>
+                        <label>Tool Photo (Max 100KB, Auto-compress)</label>
                         <div style={{ marginBottom: '15px' }}>
                             <input
                                 type="file"
