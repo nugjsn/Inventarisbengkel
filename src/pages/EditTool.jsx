@@ -22,7 +22,7 @@ const jurusanCategories = {
 const EditTool = () => {
     const { id } = useParams();
     const navigate = useNavigate();
-    const { getToolById, updateTool } = useInventory();
+    const { getToolById, updateTool, fetchToolWithImage } = useInventory();
     const { getJurusan, isAdmin } = useAuth();
     const userJurusan = getJurusan();
 
@@ -55,30 +55,40 @@ const EditTool = () => {
     }, [formData.jurusan, initialLoaded]);
 
     useEffect(() => {
-        const tool = getToolById(id);
-        if (tool) {
-            if (!isAdmin && tool.jurusan !== userJurusan) {
-                navigate('/');
-                return;
-            }
+        const loadTool = async () => {
+            const tool = getToolById(id);
+            if (tool) {
+                if (!isAdmin && tool.jurusan !== userJurusan) {
+                    navigate('/');
+                    return;
+                }
 
-            setFormData({
-                name: tool.name || '',
-                code: tool.code || '',
-                category: tool.category || 'Hand Tools',
-                jurusan: tool.jurusan || 'TKR',
-                condition: tool.condition || 'Good',
-                status: tool.status || 'Available',
-                description: tool.description || '',
-                purchaseYear: tool.purchaseYear || tool.purchaseDate?.substring(0, 4) || new Date().getFullYear().toString(),
-                image: tool.image || null,
-                sop: tool.sop && tool.sop.length ? tool.sop : ['']
-            });
-            setInitialLoaded(true);
-        } else {
-            navigate('/');
-        }
-    }, [id, getToolById, navigate, userJurusan, isAdmin]);
+                // Initial set without image
+                setFormData({
+                    name: tool.name || '',
+                    code: tool.code || '',
+                    category: tool.category || 'Hand Tools',
+                    jurusan: tool.jurusan || 'TKR',
+                    condition: tool.condition || 'Good',
+                    status: tool.status || 'Available',
+                    description: tool.description || '',
+                    purchaseYear: tool.purchaseYear || tool.purchaseDate?.substring(0, 4) || new Date().getFullYear().toString(),
+                    image: null,
+                    sop: tool.sop && tool.sop.length ? tool.sop : ['']
+                });
+                setInitialLoaded(true);
+
+                // Fetch image directly
+                const fullTool = await fetchToolWithImage(id);
+                if (fullTool && fullTool.image) {
+                    setFormData(prev => ({ ...prev, image: fullTool.image }));
+                }
+            } else {
+                navigate('/');
+            }
+        };
+        loadTool();
+    }, [id, getToolById, navigate, userJurusan, isAdmin, fetchToolWithImage]);
 
     const handleChange = (e) => {
         setFormData({ ...formData, [e.target.name]: e.target.value });

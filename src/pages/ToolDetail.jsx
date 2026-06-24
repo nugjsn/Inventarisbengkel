@@ -12,8 +12,22 @@ const ToolDetail = () => {
     const query = new URLSearchParams(location.search);
     const isScanView = query.get('view') === 'scan';
 
-    const { getToolById, deleteTool, borrowTool, returnTool, getBorrowHistory, loading } = useInventory();
-    const tool = getToolById(id);
+    const { getToolById, deleteTool, borrowTool, returnTool, getBorrowHistory, loading, fetchToolWithImage } = useInventory();
+    const globalTool = getToolById(id);
+    const [toolImage, setToolImage] = useState(null);
+    const [fetchingImage, setFetchingImage] = useState(false);
+
+    useEffect(() => {
+        if (id) {
+            setFetchingImage(true);
+            fetchToolWithImage(id).then(data => {
+                if (data && data.image) setToolImage(data.image);
+                setFetchingImage(false);
+            });
+        }
+    }, [id, fetchToolWithImage]);
+
+    const tool = globalTool ? { ...globalTool, image: toolImage || globalTool.image } : null;
     const [showQR, setShowQR] = useState(false);
     const [history, setHistory] = useState([]);
     const [loadingHistory, setLoadingHistory] = useState(true);
@@ -43,7 +57,7 @@ const ToolDetail = () => {
     // Security: Only owner or admin can edit/delete
     const canManage = isAdmin || (tool?.jurusan === userJurusan);
 
-    if (loading) {
+    if (loading || (globalTool && fetchingImage && !toolImage)) {
         return (
             <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '80vh', flexDirection: 'column' }}>
                 <div style={{ width: '40px', height: '40px', border: '4px solid rgba(255,255,255,0.1)', borderTopColor: 'var(--accent-primary)', borderRadius: '50%', animation: 'spin 1s linear infinite' }}></div>

@@ -14,7 +14,7 @@ export const InventoryProvider = ({ children }) => {
     const { data, error } = await supabase
       .from('tools')
       .select(`
-        *,
+        id, name, category, jurusan, condition, status, description, purchase_date, sop, created_at,
         borrow_history(id, borrower_name, borrower_unit, status)
       `)
       .order('created_at', { ascending: false });
@@ -35,7 +35,7 @@ export const InventoryProvider = ({ children }) => {
           description: t.description,
           purchaseDate: t.purchase_date,
           purchaseYear: t.purchase_date ? t.purchase_date.substring(0, 4) : '',
-          image: t.image,
+          // image excluded from bulk fetch to save Disk IO
           sop: t.sop || [],
           createdAt: t.created_at,
           currentBorrower: activeBorrow ? {
@@ -83,7 +83,7 @@ export const InventoryProvider = ({ children }) => {
         description: t.description,
         purchaseDate: t.purchase_date,
         purchaseYear: t.purchase_date ? t.purchase_date.substring(0, 4) : '',
-        image: t.image,
+        // Do not store large base64 image in global state
         sop: t.sop || [],
         createdAt: t.created_at
       };
@@ -130,6 +130,32 @@ export const InventoryProvider = ({ children }) => {
   const getToolById = useCallback((id) => {
     return tools.find(t => t.id === id);
   }, [tools]);
+
+  const fetchToolWithImage = useCallback(async (id) => {
+    const { data, error } = await supabase
+      .from('tools')
+      .select('*')
+      .eq('id', id)
+      .single();
+    if (error) {
+      console.error('Error fetching single tool:', error);
+      return null;
+    }
+    return {
+      id: data.id,
+      name: data.name,
+      category: data.category,
+      jurusan: data.jurusan,
+      condition: data.condition,
+      status: data.status,
+      description: data.description,
+      purchaseDate: data.purchase_date,
+      purchaseYear: data.purchase_date ? data.purchase_date.substring(0, 4) : '',
+      image: data.image,
+      sop: data.sop || [],
+      createdAt: data.created_at
+    };
+  }, []);
 
   // BORROWING FUNCTIONS
   const borrowTool = async (toolId, borrowerData) => {
@@ -218,6 +244,7 @@ export const InventoryProvider = ({ children }) => {
       updateTool,
       deleteTool,
       getToolById,
+      fetchToolWithImage,
       borrowTool,
       returnTool,
       getBorrowHistory
