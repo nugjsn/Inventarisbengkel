@@ -96,6 +96,7 @@ export const InventoryProvider = ({ children }) => {
       .from('tools')
       .update({
         name: toolData.name,
+        code: toolData.code || null,
         category: toolData.category,
         jurusan: toolData.jurusan,
         condition: toolData.condition,
