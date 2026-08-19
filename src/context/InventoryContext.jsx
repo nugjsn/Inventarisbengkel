@@ -14,7 +14,7 @@ export const InventoryProvider = ({ children }) => {
     const { data, error } = await supabase
       .from('tools')
       .select(`
-        id, name, category, jurusan, condition, status, description, purchase_date, sop, created_at,
+        id, name, code, category, jurusan, condition, status, description, purchase_date, sop, created_at,
         borrow_history(id, borrower_name, borrower_unit, status)
       `)
       .order('created_at', { ascending: false });
@@ -28,6 +28,7 @@ export const InventoryProvider = ({ children }) => {
         return {
           id: t.id,
           name: t.name,
+          code: t.code || '',
           category: t.category,
           jurusan: t.jurusan,
           condition: t.condition,
@@ -58,6 +59,7 @@ export const InventoryProvider = ({ children }) => {
       .from('tools')
       .insert([{
         name: toolData.name,
+        code: toolData.code || null,
         category: toolData.category,
         jurusan: toolData.jurusan,
         condition: toolData.condition,
@@ -76,6 +78,7 @@ export const InventoryProvider = ({ children }) => {
       const newTool = {
         id: t.id,
         name: t.name,
+        code: t.code || '',
         category: t.category,
         jurusan: t.jurusan,
         condition: t.condition,
@@ -110,10 +113,13 @@ export const InventoryProvider = ({ children }) => {
 
     if (error) {
       console.error('Error updating tool:', error);
+      return { error };
     } else {
       setTools(prev => prev.map(t => t.id === id ? { ...t, ...toolData } : t));
+      return { success: true };
     }
   };
+
 
   const deleteTool = async (id) => {
     const { error } = await supabase
@@ -145,6 +151,7 @@ export const InventoryProvider = ({ children }) => {
     return {
       id: data.id,
       name: data.name,
+      code: data.code || '',
       category: data.category,
       jurusan: data.jurusan,
       condition: data.condition,

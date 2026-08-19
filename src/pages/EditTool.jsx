@@ -159,11 +159,15 @@ const EditTool = () => {
         }
     };
 
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
         if (imageError) return;
         const cleanData = { ...formData, sop: formData.sop.filter(s => s.trim()) };
-        updateTool(id, cleanData);
+        const result = await updateTool(id, cleanData);
+        if (result && result.error) {
+            alert('Gagal menyimpan: ' + result.error.message);
+            return;
+        }
         navigate(`/tool/${id}`);
     };
 
