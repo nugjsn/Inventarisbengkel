@@ -31,7 +31,7 @@ const Header = () => {
                 </Link>
                 <Link to="/borrowed" className={location.pathname === '/borrowed' ? 'active' : ''}>
                     <ClipboardList size={18} />
-                    <span className="nav-link-text" style={{ marginLeft: '6px' }}>Peminjaman</span>
+                    <span className="nav-link-text" style={{ marginLeft: '6px' }}>Alat Dipinjam</span>
                 </Link>
                 <Link to="/add" className={`btn btn-primary ${location.pathname === '/add' ? 'active' : ''}`} style={{ color: 'white' }}>
                     <PlusCircle size={18} />

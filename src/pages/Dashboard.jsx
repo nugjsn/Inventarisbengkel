@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { Link } from 'react-router-dom';
 import { useInventory } from '../context/InventoryContext';
 import ToolCard from '../components/ToolCard';
 import { useAuth } from '../context/AuthContext';
@@ -93,15 +94,20 @@ const Dashboard = () => {
                         <span className="stat-label">Tersedia</span>
                     </div>
                 </div>
-                <div className="stat-card">
+                <Link
+                    to="/borrowed"
+                    className="stat-card"
+                    style={{ textDecoration: 'none', color: 'inherit', cursor: 'pointer' }}
+                    title="Buka Dashboard Khusus Alat Dipinjam & Laporan Export"
+                >
                     <div className="stat-icon stat-icon-inuse">
                         <Clock size={22} />
                     </div>
                     <div className="stat-info">
                         <span className="stat-number">{stats.inUse}</span>
-                        <span className="stat-label">Digunakan</span>
+                        <span className="stat-label">Digunakan ↗</span>
                     </div>
-                </div>
+                </Link>
                 <div className="stat-card">
                     <div className="stat-icon stat-icon-maintenance">
                         <AlertTriangle size={22} />
