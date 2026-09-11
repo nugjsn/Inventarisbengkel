@@ -244,6 +244,24 @@ export const InventoryProvider = ({ children }) => {
     return data;
   };
 
+  const getAllBorrowHistory = async () => {
+    const { data, error } = await supabase
+      .from('borrow_history')
+      .select(`
+        *,
+        tools (
+          name, code, jurusan, category
+        )
+      `)
+      .order('borrow_date', { ascending: false });
+
+    if (error) {
+      console.error('Error fetching all borrow history:', error);
+      return [];
+    }
+    return data;
+  };
+
   return (
     <InventoryContext.Provider value={{
       tools,
@@ -255,7 +273,8 @@ export const InventoryProvider = ({ children }) => {
       fetchToolWithImage,
       borrowTool,
       returnTool,
-      getBorrowHistory
+      getBorrowHistory,
+      getAllBorrowHistory
     }}>
       {children}
     </InventoryContext.Provider>

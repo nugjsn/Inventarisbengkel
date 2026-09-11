@@ -6,6 +6,7 @@ import EditTool from './pages/EditTool';
 import ToolDetail from './pages/ToolDetail';
 import LoginPage from './pages/LoginPage';
 import CompressData from './pages/CompressData';
+import BorrowedTools from './pages/BorrowedTools';
 import { InventoryProvider } from './context/InventoryContext';
 import { AuthProvider, useAuth } from './context/AuthContext';
 
@@ -69,6 +70,11 @@ const AppRoutes = () => {
         <Route path="/compress-db" element={
           <ProtectedRoute>
             <CompressData />
+          </ProtectedRoute>
+        } />
+        <Route path="/borrowed" element={
+          <ProtectedRoute>
+            <BorrowedTools />
           </ProtectedRoute>
         } />
 

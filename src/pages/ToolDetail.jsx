@@ -213,7 +213,7 @@ const ToolDetail = () => {
                         )}
 
                         <div style={{ flex: '2 1 300px' }}>
-                            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '15px' }}>
+                            <div className="tool-detail-title-row">
                                 <h1 className="minimal-title" style={{ margin: 0 }}>{tool.name}</h1>
                                 <span className={`status-badge ${tool.status.toLowerCase().replace(' ', '-')}`}>
                                     {tool.status === 'In Use' ? <History size={14} /> : <CheckCircle size={14} />}
@@ -221,7 +221,7 @@ const ToolDetail = () => {
                                 </span>
                             </div>
 
-                            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(150px, 1fr))', gap: '20px', marginBottom: '20px' }}>
+                            <div className="tool-detail-fields-grid">
                                 <div className="minimal-field">
                                     <label>Jurusan</label>
                                     <p className="minimal-value">{tool.jurusan}</p>
@@ -268,7 +268,7 @@ const ToolDetail = () => {
 
                             {/* ACTION BUTTONS (Borrow/Return) */}
                             {canManage && (
-                                <div style={{ display: 'flex', gap: '10px', marginBottom: '25px' }}>
+                                <div className="tool-detail-actions">
                                     {tool.status === 'Available' ? (
                                         <button onClick={() => setShowBorrowModal(true)} className="btn btn-primary" style={{ flex: 1 }}>
                                             <Wrench size={18} /> Pinjam Alat
@@ -359,7 +359,7 @@ const ToolDetail = () => {
                 </div>
 
                 {!isScanView && (
-                    <div className="no-print mt-4" style={{ display: 'flex', flexWrap: 'wrap', gap: '10px', paddingTop: '30px', borderTop: '1px solid var(--border)', marginTop: '40px' }}>
+                    <div className="tool-detail-bottom-actions no-print mt-4">
                         <button onClick={() => navigate('/')} className="btn btn-outline">
                             <ArrowLeft size={16} /> Dashboard
                         </button>

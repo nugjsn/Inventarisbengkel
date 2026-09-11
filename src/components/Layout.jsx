@@ -1,5 +1,5 @@
 import { useNavigate, Link, useLocation } from 'react-router-dom';
-import { Wrench, PlusCircle, LogOut, LayoutDashboard } from 'lucide-react';
+import { Wrench, PlusCircle, LogOut, LayoutDashboard, ClipboardList } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 
 const Header = () => {
@@ -28,6 +28,10 @@ const Header = () => {
                 <Link to="/" className={location.pathname === '/' ? 'active' : ''}>
                     <LayoutDashboard size={18} />
                     <span className="nav-link-text" style={{ marginLeft: '6px' }}>Dashboard</span>
+                </Link>
+                <Link to="/borrowed" className={location.pathname === '/borrowed' ? 'active' : ''}>
+                    <ClipboardList size={18} />
+                    <span className="nav-link-text" style={{ marginLeft: '6px' }}>Peminjaman</span>
                 </Link>
                 <Link to="/add" className={`btn btn-primary ${location.pathname === '/add' ? 'active' : ''}`} style={{ color: 'white' }}>
                     <PlusCircle size={18} />
